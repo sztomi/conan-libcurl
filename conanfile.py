@@ -101,7 +101,7 @@ class LibCurlConan(ConanFile):
             replace_in_file("%s/configure" % self.ZIP_FOLDER_NAME, old_str, new_str)
  
  
-            configure = "cd %s && %s ./configure %s" % (self.ZIP_FOLDER_NAME, command_line, suffix)
+            configure = "cd %s && %s ./configure %s --prefix=%s" % (self.ZIP_FOLDER_NAME, command_line, suffix, self.package_folder)
             self.output.warn(configure)
             
             # BUG: https://github.com/curl/curl/commit/bd742adb6f13dc668ffadb2e97a40776a86dc124
@@ -159,6 +159,10 @@ CONAN_BASIC_SETUP()
                     self.copy(pattern="*.so*", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
             else:
                 self.copy(pattern="*.a", dst="lib", src=self.ZIP_FOLDER_NAME, keep_path=False)
+        
+        # copying curl-config
+        if self.settings.os != "Windows":
+            self.copy("curl-config", src=self.ZIP_FOLDER_NAME, dst="bin", keep_path=False)
 
     def package_info(self):
         if self.settings.os != "Windows":
